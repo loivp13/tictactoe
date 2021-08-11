@@ -1,0 +1,9 @@
+{
+  "templates": [
+    {
+      "name": "install",
+      "template": "Clone using git or download the files. Run ( npm run install ) to download dependencies for both root and client directories. Run ( npm run dev ) for development in root and ( npm run start ) in client"
+    }
+  ],
+  "line": "aqua"
+}
