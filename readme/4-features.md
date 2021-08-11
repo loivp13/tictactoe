@@ -1,5 +1,6 @@
 ## Features
 
+- Redis to store data in memory storage for quick access for socket.io.
 - Full stack application with Express, React, Sequelize(ORM configured for
   Postgres), Tailwindcss, AWS SES, JWT, Nodemon, and Multiple Themes support.
 - Express framework with cors and body parser enabled.

@@ -1,7 +1,7 @@
-<!-- ⚠️ This README has been generated from the file(s) "blueprint.md" ⚠️--><h1 align="center">nodejs-express-sequelize-postgresql-react</h1>
+<!-- ⚠️ This README has been generated from the file(s) "blueprint.md" ⚠️--><h1 align="center">tictactoe</h1>
 
 <p align="center">
-  <b>A broilerplate for Nodejs, Sequelize, and React with extra features such as Tailwindcss, AWS SES, JWT and more.</b></br>
+  <b>Tic-tac-toe is a classic game where users take turns placing their symbol on a 3X3 grid. To win, user must place in a diagonal, horizontal, or vertical row. If neither player are able to, the game ends in a draw. This game has a slight twist with betting money where the person who bets the most gets to go.</b></br>
   <sub><sub>
 </p>
 
@@ -69,6 +69,7 @@ npm run start
 
 ## ➤ Features
 
+- Redis to store data in memory storage for quick access for socket.io.
 - Full stack application with Express, React, Sequelize(ORM configured for
   Postgres), Tailwindcss, AWS SES, JWT, Nodemon, and Multiple Themes support.
 - Express framework with cors and body parser enabled.
