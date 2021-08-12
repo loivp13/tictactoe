@@ -1,7 +1,7 @@
 import { extend } from "./utils";
-import base from "./base";
+import lilacPink from "./lilacPink";
 
-export default extend(base, {
+export default extend(lilacPink, {
   backgroundColor: "#5A91AA",
   text: "#133F53",
   linkTextSecondary: "#B2D7E6",

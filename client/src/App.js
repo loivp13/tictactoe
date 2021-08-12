@@ -4,7 +4,7 @@ import { applyTheme } from "./themes/utils";
 import "./App.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import LandingPage from "./features/landingPage/LandingPage";
-import ActivateAccount from "./features/activateAccount/ActivateAccount.js";
+import GamePage from "./features/gamePage/GamePage";
 
 function App() {
   const [theme, setTheme] = useState(DEFAULT_THEME);
@@ -24,7 +24,12 @@ function App() {
             );
           }}
         ></Route>
-        <Route path="/activate/:token" component={ActivateAccount}></Route>
+        <Route
+          path="/room/:id"
+          component={() => {
+            return <GamePage></GamePage>;
+          }}
+        ></Route>
       </Switch>
     </Router>
   );
