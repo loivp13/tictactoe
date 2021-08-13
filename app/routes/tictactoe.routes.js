@@ -2,9 +2,7 @@ let express = require("express");
 let router = express.Router();
 
 let returnRouter = function (io) {
-  io.on("connection", (socket) => {
-    console.log(socket.id);
-  });
+  io.on("connection", (socket) => {});
 
   router.get("/", (req, res, next) => {
     res.json({
