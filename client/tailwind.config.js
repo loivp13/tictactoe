@@ -7,13 +7,15 @@ module.exports = {
   },
   plugins: [],
   theme: {
-    colors: {
-      "th-background": "var(--th-background)",
-      "th-text": "var(--th-text)",
-      "th-linkText": "var(--th-linkText)",
-      "th-linkTextSecondary": "var(--th-linkTextSecondary)",
-      "th-popUp": "var(--th-popUp)",
-      "th-error": "var(--th-error)",
+    extend: {
+      colors: {
+        "th-background": "var(--th-background)",
+        "th-text": "var(--th-text)",
+        "th-linkText": "var(--th-linkText)",
+        "th-linkTextSecondary": "var(--th-linkTextSecondary)",
+        "th-popUp": "var(--th-popUp)",
+        "th-error": "var(--th-error)",
+      },
     },
   },
 };

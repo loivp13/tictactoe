@@ -1,13 +1,20 @@
-const express = require("express");
-const cors = require("cors");
 require("dotenv").config();
-
+const express = require("express");
 const app = express();
+const httpServer = require("http").createServer(app);
+const io = require("socket.io")(httpServer, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true,
+  },
+});
 
-var corsOptions = {
+const cors = require("cors");
+let corsOptions = {
   origin: "http://localhost:8081",
 };
-
 app.use(cors(corsOptions));
 
 // parse requests of content-type - application/json
@@ -40,14 +47,16 @@ let AuthRoutes = require("./app/routes/auth.routes");
 let IndexRoutes = require("./app/routes/index.routes");
 let TutorialRoutes = require("./app/routes/tutorial.routes");
 let UserRoutes = require("./app/routes/user.routes");
+let TicTacToeRoutes = require("./app/routes/tictactoe.routes");
 app.use("/", IndexRoutes);
 app.use("/api/auth", AuthRoutes);
 app.use("/api/tutorials", TutorialRoutes);
 app.use("/api/users", UserRoutes);
+app.use("/api/ticTacToe", TicTacToeRoutes(io));
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, async () => {
+httpServer.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}.`);
   try {
     await db.sequelize.authenticate();
