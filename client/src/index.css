@@ -68,6 +68,9 @@ input::-moz-focus-outer {
 /* height utilities */
 @layer utilities {
   @variants responsive {
+    .h-1\/10 {
+      height: 10%;
+    }
     .h-9\/10 {
       height: 90%;
     }

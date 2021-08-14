@@ -25,7 +25,7 @@ function App() {
           }}
         ></Route>
         <Route
-          path="/room/:id"
+          path="/gamePage"
           component={() => {
             return <GamePage></GamePage>;
           }}

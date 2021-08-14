@@ -47,12 +47,14 @@ let AuthRoutes = require("./app/routes/auth.routes");
 let IndexRoutes = require("./app/routes/index.routes");
 let TutorialRoutes = require("./app/routes/tutorial.routes");
 let UserRoutes = require("./app/routes/user.routes");
-let TicTacToeRoutes = require("./app/routes/tictactoe.routes");
 app.use("/", IndexRoutes);
 app.use("/api/auth", AuthRoutes);
 app.use("/api/tutorials", TutorialRoutes);
 app.use("/api/users", UserRoutes);
-app.use("/api/ticTacToe", TicTacToeRoutes(io));
+
+//Sockets init
+let socketListen = require("./app/helpers/socketListen");
+socketListen(io);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

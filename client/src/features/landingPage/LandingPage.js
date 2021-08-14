@@ -2,19 +2,40 @@ import React from "react";
 import socket from "../../helper/socket";
 import styles from "./LandingPage.styles";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useHistory } from "react-router-dom";
 
 import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
+//Schemas for createRooma and joinRoom forms
 const createRoomSchema = yup.object().shape({
   createRoom_username: yup.string().required("Username is required."),
 });
+
 const joinRoomSchema = yup.object().shape({
   joinRoom_username: yup.string().required("Username is required"),
   joinRoom_roomid: yup.string().required("Room id is required"),
 });
 
 export default function LandingPage({}) {
+  //navigation wtih history
+  let history = useHistory();
+
+  //socket listening
+  socket.on("createRoom", (data) => {
+    console.log(data);
+    localStorage.setItem("roomid", data.roomid);
+    localStorage.setItem("username", data.username);
+    history.push("/gamePage");
+  });
+  socket.on("connect_error", (err) => {
+    if (err.message === "invalid username") {
+      console.log("wrong username");
+    }
+  });
+
+  //create submit handler, errors handling for forms;
+  //register to inputs using register:<rename> function
   const {
     register: register_createRoom,
     handleSubmit: handle_createRoom,
@@ -27,9 +48,10 @@ export default function LandingPage({}) {
     formState: { errors: joinRoomErrors },
   } = useForm({ resolver: yupResolver(joinRoomSchema) });
 
+  // passed to the submit handler if no errors form forms;
   const submitCreateRoom = (data, e) => {
     console.log(data);
-    socket.auth = { user: "name" };
+    socket.auth = { user: data.createRoom_username };
     socket.connect();
   };
 
@@ -74,6 +96,7 @@ export default function LandingPage({}) {
           <div className={styles.ErrorMessages()}>
             {joinRoomErrors.joinRoom_username &&
               joinRoomErrors.joinRoom_username.message}
+            <br></br>
             {joinRoomErrors.joinRoom_roomid &&
               joinRoomErrors.joinRoom_roomid.message}
           </div>
