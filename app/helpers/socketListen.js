@@ -11,16 +11,32 @@ let socketListen = function (io) {
     next();
   });
   io.on("connection", (socket) => {
+    console.log("CONNECTING!");
     let roomid = socket.handshake.auth.roomid;
     if (roomid) {
+      console.log(roomid);
       socket.join(roomid);
+      socket.emit("joinRoom", {
+        username: socket.username,
+        roomid,
+      });
     } else {
-      io.emit("createRoom", { username: socket.username, roomid: socket.id });
+      socket.join(socket.id);
+      socket.emit("createRoom", {
+        username: socket.username,
+        roomid: socket.id,
+      });
     }
+    socket.on("submitChatMessage", ({ content, roomid }) => {
+      console.log(content);
+      io.to(roomid).emit("updateChatRoom", {
+        content,
+        from: socket.username,
+      });
+    });
   });
-
-  io.on("submitChatMessage", ({ content, roomid }) => {
-    console.log(content, roomid);
+  io.on("disconnect", (socket) => {
+    console.log("DISCONNECTED");
   });
 };
 

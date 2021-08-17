@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import socket from "../../helper/socket";
 import styles from "./LandingPage.styles";
 import { useForm } from "react-hook-form";
@@ -20,19 +20,6 @@ const joinRoomSchema = yup.object().shape({
 export default function LandingPage({}) {
   //navigation wtih history
   let history = useHistory();
-
-  //socket listening
-  socket.on("createRoom", (data) => {
-    console.log(data);
-    localStorage.setItem("roomid", data.roomid);
-    localStorage.setItem("username", data.username);
-    history.push("/gamePage");
-  });
-  socket.on("connect_error", (err) => {
-    if (err.message === "invalid username") {
-      console.log("wrong username");
-    }
-  });
 
   //create submit handler, errors handling for forms;
   //register to inputs using register:<rename> function
@@ -57,10 +44,37 @@ export default function LandingPage({}) {
 
   const submitJoinRoom = (data, e) => {
     console.log("connecting to socket.io");
-    socket.auth = { roomid: data.joinRoom_roomid };
+    socket.auth = {
+      roomid: data.joinRoom_roomid,
+      user: data.joinRoom_username,
+    };
     socket.connect();
   };
-
+  useEffect(() => {
+    //socket listening
+    socket.on("createRoom", (data) => {
+      console.log(data);
+      localStorage.setItem("roomid", data.roomid);
+      localStorage.setItem("username", data.username);
+      history.push("/gamePage");
+    });
+    socket.on("joinRoom", (data) => {
+      console.log(data);
+      localStorage.setItem("roomid", data.roomid);
+      localStorage.setItem("username", data.username);
+      history.push("/GamePage");
+    });
+    socket.on("connect_error", (err) => {
+      if (err.message === "invalid username") {
+        console.log("wrong username");
+      }
+      return () => {
+        socket.off("createRoom");
+        socket.off("joinRoom");
+        socket.off("connect_error");
+      };
+    });
+  }, []);
   return (
     <div className={styles.LandingPage()}>
       <header className={styles.Header()}> Tic Tac Toe</header>
@@ -113,7 +127,7 @@ export default function LandingPage({}) {
               placeholder="Please enter a username"
               {...register_joinRoom("joinRoom_username")}
             />
-            <label htmlFor="joinRoom_roomid">Username</label>
+            <label htmlFor="joinRoom_roomid">Room ID</label>
 
             <input
               id="joinRoom_roomid"

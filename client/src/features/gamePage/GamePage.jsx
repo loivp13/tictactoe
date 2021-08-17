@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./GamePage.styles";
 import socket from "../../helper/socket";
 import { useForm } from "react-hook-form";
@@ -14,27 +14,16 @@ const chatMessageSchema = yup.object().shape({
 export default function GamePage() {
   let roomid = localStorage.getItem("roomid");
   let [messages, setMessages] = useState([`Connected to room ${roomid}`]);
-  socket.auth = { roomid };
-  socket.connect();
 
   //navigation wtih history
   let history = useHistory();
-
-  //socket listen
-  socket.on("connect_error", (err) => {
-    if (err.message === "invalid username") {
-      history.push("/");
-    }
-  });
-  socket.on("updateMessages", (data) => {
-    console.log(data);
-  });
 
   //useForm Hook
   const {
     handleSubmit: formHandleSubmit,
     register,
     formState: { errors },
+    reset,
   } = useForm({ resolver: yupResolver(chatMessageSchema) });
 
   //handles when submitting a chat message
@@ -42,9 +31,27 @@ export default function GamePage() {
     console.log(data);
     socket.emit("submitChatMessage", {
       content: data,
-      roomid: "idk",
+      roomid,
     });
+    reset();
   };
+
+  useEffect(() => {
+    //socket listen
+    socket.on("connect_error", (err) => {
+      if (err.message === "invalid username") {
+        console.log("err.message");
+        history.push("/");
+      }
+    });
+    socket.on("updateChatRoom", (data) => {
+      setMessages([...messages, data.content.chatMessage]);
+    });
+    return () => {
+      socket.off("connect_error");
+      socket.off("updateChatRoom");
+    };
+  }, [messages]);
 
   return (
     <div className={styles.GamePage()}>
