@@ -56,24 +56,28 @@ export default function LandingPage({}) {
       console.log(data);
       localStorage.setItem("roomid", data.roomid);
       localStorage.setItem("username", data.username);
+      localStorage.setItem("permissionLvl", "host");
+      localStorage.setItem("playersOnline", 1);
       history.push("/gamePage");
     });
     socket.on("joinRoom", (data) => {
       console.log(data);
       localStorage.setItem("roomid", data.roomid);
       localStorage.setItem("username", data.username);
+      localStorage.setItem("permissionLvl", "client");
+
       history.push("/GamePage");
     });
     socket.on("connect_error", (err) => {
       if (err.message === "invalid username") {
         console.log("wrong username");
       }
-      return () => {
-        socket.off("createRoom");
-        socket.off("joinRoom");
-        socket.off("connect_error");
-      };
     });
+    return () => {
+      socket.off("createRoom");
+      socket.off("joinRoom");
+      socket.off("connect_error");
+    };
   }, []);
   return (
     <div className={styles.LandingPage()}>

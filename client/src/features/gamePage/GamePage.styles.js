@@ -16,7 +16,8 @@ export default {
       "h-full",
       "flex",
       "flex-col",
-      "items-center"
+      "items-center",
+      "justify-between"
     );
   },
   Header: () => {
@@ -25,8 +26,7 @@ export default {
       "text-4xl",
       "text-white",
       "text-center",
-      "h-1/10",
-      "my-12"
+      "mt-6"
     );
   },
   ScoreBoard: () => {
@@ -43,7 +43,20 @@ export default {
       "bg-green-500",
       "flex",
       "flex-col",
-      "justify-between"
+      "justify-between",
+      "relative"
+    );
+  },
+  RoomId: () => {
+    return classnames(
+      "RoomId",
+      "absolute",
+      "top-0",
+      "transform",
+      "-translate-y-full",
+      "bg-white",
+      "p-2",
+      "w-full"
     );
   },
   MessageBoard: () => {
@@ -70,8 +83,5 @@ export default {
   },
   ChatButton: () => {
     return classnames("ChatButton", "bg-white", "p-2", "rounded", "border");
-  },
-  RightBox: () => {
-    return classnames("RightBox", "w-4/5", "h-full", "bg-indigo-800");
   },
 };

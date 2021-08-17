@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useHistory } from "react-router-dom";
+import GameBoard from "./components/GameBoard";
 
 //schema for chat form
 const chatMessageSchema = yup.object().shape({
@@ -13,7 +14,11 @@ const chatMessageSchema = yup.object().shape({
 
 export default function GamePage() {
   let roomid = localStorage.getItem("roomid");
-  let [messages, setMessages] = useState([`Connected to room ${roomid}`]);
+  let username = localStorage.getItem("username");
+  let [messages, setMessages] = useState([`Welcome ${username}!`]);
+  let [playerCount, setPlayerCount] = useState(
+    localStorage.getItem("playersOnline")
+  );
 
   //navigation wtih history
   let history = useHistory();
@@ -47,9 +52,16 @@ export default function GamePage() {
     socket.on("updateChatRoom", (data) => {
       setMessages([...messages, data.content.chatMessage]);
     });
+    socket.on("userJoin", (data) => {
+      let playersCount = localStorage.getItem("playersOnline");
+      setPlayerCount(++playerCount);
+      setMessages([...messages, data.content]);
+    });
     return () => {
       socket.off("connect_error");
       socket.off("updateChatRoom");
+      socket.off("userJoin");
+      socket.disconnect();
     };
   }, [messages]);
 
@@ -60,6 +72,9 @@ export default function GamePage() {
         <div className={styles.ScoreBoard()}>score board</div>
         <div className={styles.Row()}>
           <div className={styles.ChatBox()}>
+            <div className={styles.RoomId()}>
+              Room Id: <span className="text-red-500">{roomid}</span>
+            </div>
             <div className={styles.MessageBoard()}>
               <ul>
                 {messages.map((message, i) => {
@@ -87,7 +102,7 @@ export default function GamePage() {
               </form>
             </div>
           </div>
-          <div className={styles.RightBox()}>game board</div>
+          <GameBoard playerCount={playerCount}></GameBoard>
         </div>
       </main>
     </div>

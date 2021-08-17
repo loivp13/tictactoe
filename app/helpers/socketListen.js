@@ -11,14 +11,17 @@ let socketListen = function (io) {
     next();
   });
   io.on("connection", (socket) => {
-    console.log("CONNECTING!");
     let roomid = socket.handshake.auth.roomid;
+
     if (roomid) {
       console.log(roomid);
       socket.join(roomid);
       socket.emit("joinRoom", {
         username: socket.username,
         roomid,
+      });
+      io.to(roomid).emit("userJoin", {
+        content: `${socket.username} has joined!`,
       });
     } else {
       socket.join(socket.id);
