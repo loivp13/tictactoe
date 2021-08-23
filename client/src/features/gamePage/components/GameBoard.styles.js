@@ -23,6 +23,20 @@ export default {
       "grid-rows-3"
     );
   },
+  LogoutButton: () => {
+    return classnames(
+      "LogoutButton",
+      "bg-red-500",
+      "cursor-pointer",
+      "absolute",
+      "px-6",
+      "py-4",
+      "rounded-xl",
+      "border",
+      "transform",
+      "translate-y-full"
+    );
+  },
   Tile: (border) => {
     return classnames("Tile", border, "border-black");
   },

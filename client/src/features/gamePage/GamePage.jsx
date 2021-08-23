@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useHistory } from "react-router-dom";
+import checkIfLogin from "../../helper/checkIfLogin";
 import GameBoard from "./components/GameBoard";
 
 //schema for chat form
@@ -13,16 +14,19 @@ const chatMessageSchema = yup.object().shape({
 });
 
 export default function GamePage() {
+  //navigation wtih history
+  let history = useHistory();
+
   let roomid = localStorage.getItem("roomid");
   let username = localStorage.getItem("username");
+
   let [messages, setMessages] = useState([`Welcome ${username}!`]);
   let [playerCount, setPlayerCount] = useState(
     localStorage.getItem("playersOnline")
   );
 
-  //navigation wtih history
-  let history = useHistory();
-
+  //reroute to homepage if no username or roomid
+  checkIfLogin(username, roomid, history);
   //useForm Hook
   const {
     handleSubmit: formHandleSubmit,
@@ -58,10 +62,10 @@ export default function GamePage() {
       setMessages([...messages, data.content]);
     });
     return () => {
+      socket.disconnect();
       socket.off("connect_error");
       socket.off("updateChatRoom");
       socket.off("userJoin");
-      socket.disconnect();
     };
   }, [messages]);
 

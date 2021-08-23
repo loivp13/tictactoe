@@ -53,7 +53,6 @@ export default function LandingPage({}) {
   useEffect(() => {
     //socket listening
     socket.on("createRoom", (data) => {
-      console.log(data);
       localStorage.setItem("roomid", data.roomid);
       localStorage.setItem("username", data.username);
       localStorage.setItem("permissionLvl", "host");
@@ -61,7 +60,6 @@ export default function LandingPage({}) {
       history.push("/gamePage");
     });
     socket.on("joinRoom", (data) => {
-      console.log(data);
       localStorage.setItem("roomid", data.roomid);
       localStorage.setItem("username", data.username);
       localStorage.setItem("permissionLvl", "client");

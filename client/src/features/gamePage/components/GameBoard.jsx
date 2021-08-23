@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import styles from "./GameBoard.styles";
 import socket from "../../../helper/socket";
+import { useHistory } from "react-router-dom";
 
 export default function GameBoard({ playerCount }) {
+  let history = useHistory();
+
   let [gameBoard, setGameBoard] = useState([
     [null, null, null],
     [null, null, null],
@@ -25,8 +28,16 @@ export default function GameBoard({ playerCount }) {
     }
   };
 
+  const handleLogoutClick = () => {
+    socket.disconnect();
+    history.push("/");
+  };
   return (
     <div className={styles.GameBoard()}>
+      <div onClick={handleLogoutClick} className={styles.LogoutButton()}>
+        Logout
+      </div>
+
       <div className={styles.PlayButton(playerCount)}>
         {permssionLvl === "client" ? "Waiting for Host" : "Play"}
       </div>

@@ -39,7 +39,7 @@ let socketListen = function (io) {
     });
   });
   io.on("disconnect", (socket) => {
-    console.log("DISCONNECTED");
+    console.log("disconnected");
   });
 };
 
