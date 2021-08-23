@@ -2,20 +2,22 @@ import React, { useState } from "react";
 import styles from "./GameBoard.styles";
 import socket from "../../../helper/socket";
 import { useHistory } from "react-router-dom";
+import checkForWinner from "./helpers/checkForWinner.tsx";
 
 export default function GameBoard({ playerCount }) {
   let history = useHistory();
 
   let [gameBoard, setGameBoard] = useState([
-    [null, null, null],
-    [null, null, null],
-    [null, null, null],
+    [null, null, "x"],
+    [null, "x", null],
+    ["x", null, null],
   ]);
   let [isGameRunning, setIsGameRunning] = useState(false);
   let [permssionLvl, setPermissionLvl] = useState(
     localStorage.getItem("permissionLvl")
   );
 
+  console.log(checkForWinner(gameBoard));
   const applyBorder = (i, j) => {
     if (i > 1 && j !== 2) {
       return "border-r";
