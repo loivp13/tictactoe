@@ -16,7 +16,6 @@ const chatMessageSchema = yup.object().shape({
 export default function GamePage() {
   //navigation wtih history
   let history = useHistory();
-
   let roomid = localStorage.getItem("roomid");
   let username = localStorage.getItem("username");
 
@@ -46,6 +45,7 @@ export default function GamePage() {
   };
 
   useEffect(() => {
+    console.log("chatrender");
     socket.on("updateChatRoom", (data) => {
       setMessages([...messages, data.content.chatMessage]);
     });
@@ -55,6 +55,7 @@ export default function GamePage() {
   }, [messages]);
 
   useEffect(() => {
+    console.log("socket render");
     //socket listen
     socket.on("connect_error", (err) => {
       if (err.message === "invalid username") {

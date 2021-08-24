@@ -11,8 +11,10 @@ let socketListen = function (io) {
     next();
   });
   io.on("connection", (socket) => {
+    //add roomid to socket
     let roomid = socket.handshake.auth.roomid;
 
+    //join room if has roomid
     if (roomid) {
       console.log(roomid);
       socket.join(roomid);
@@ -23,6 +25,7 @@ let socketListen = function (io) {
       io.to(roomid).emit("userJoin", {
         content: `${socket.username} has joined!`,
       });
+      //create room is has no id
     } else {
       socket.join(socket.id);
       socket.emit("createRoom", {
@@ -30,12 +33,20 @@ let socketListen = function (io) {
         roomid: socket.id,
       });
     }
+
+    //player submitted message
     socket.on("submitChatMessage", ({ content, roomid }) => {
       console.log(content);
       io.to(roomid).emit("updateChatRoom", {
         content,
         from: socket.username,
       });
+    });
+
+    //player started the game
+    socket.on("gameStart", ({ roomid }) => {
+      console.log("game start");
+      io.to(roomid).emit("startGame");
     });
   });
   io.on("disconnect", (socket) => {

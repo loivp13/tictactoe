@@ -54,6 +54,7 @@ export default function LandingPage({}) {
     };
     socket.connect();
   };
+
   useEffect(() => {
     //socket listening
     socket.on("createRoom", (data) => {

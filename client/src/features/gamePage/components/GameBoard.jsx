@@ -4,6 +4,7 @@ import socket from "../../../helper/socket";
 import { useHistory } from "react-router-dom";
 import checkForWinner from "./helpers/checkForWinner.tsx";
 import { cloneDeep } from "lodash";
+import { clearLocalStorage } from "../../../helper/clearLocalStorage";
 
 export default function GameBoard({ playerCount }) {
   let history = useHistory();
@@ -32,7 +33,7 @@ export default function GameBoard({ playerCount }) {
   };
 
   const handleLogoutClick = () => {
-    socket.disconnect();
+    socket.connected ? socket.disconnect() : clearLocalStorage();
     history.push("/");
   };
   const handlePlayClick = () => {
@@ -59,7 +60,7 @@ export default function GameBoard({ playerCount }) {
   };
 
   useEffect(() => {
-    console.log("render");
+    console.log("gameBoard render");
     socket.on("startGame", () => {
       setIsGameRunning(true);
       console.log("starting");
