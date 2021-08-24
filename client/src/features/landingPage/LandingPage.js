@@ -20,6 +20,10 @@ const joinRoomSchema = yup.object().shape({
 export default function LandingPage({}) {
   //navigation wtih history
   let history = useHistory();
+  let roomid = localStorage.getItem("roomid");
+  if (roomid) {
+    history.push("/gamePage");
+  }
 
   //create submit handler, errors handling for forms;
   //register to inputs using register:<rename> function

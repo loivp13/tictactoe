@@ -1,23 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./GameBoard.styles";
 import socket from "../../../helper/socket";
 import { useHistory } from "react-router-dom";
 import checkForWinner from "./helpers/checkForWinner.tsx";
+import { cloneDeep } from "lodash";
 
 export default function GameBoard({ playerCount }) {
   let history = useHistory();
+  let roomid = localStorage.getItem("roomid");
 
   let [gameBoard, setGameBoard] = useState([
-    [null, null, "x"],
-    [null, "x", null],
-    ["x", null, null],
+    [null, null, null],
+    [null, null, null],
+    [null, null, null],
   ]);
   let [isGameRunning, setIsGameRunning] = useState(false);
-  let [permssionLvl, setPermissionLvl] = useState(
+  let [permissionLvl, setPermissionLvl] = useState(
     localStorage.getItem("permissionLvl")
   );
 
-  console.log(checkForWinner(gameBoard));
   const applyBorder = (i, j) => {
     if (i > 1 && j !== 2) {
       return "border-r";
@@ -34,14 +35,52 @@ export default function GameBoard({ playerCount }) {
     socket.disconnect();
     history.push("/");
   };
+  const handlePlayClick = () => {
+    if (permissionLvl === "host") {
+      setIsGameRunning(true);
+      socket.emit("gameStart", {
+        roomid,
+      });
+    }
+  };
+  const handleBoardClick = (e) => {
+    let row = e.currentTarget.getAttribute("data-row");
+    let col = e.currentTarget.getAttribute("data-col");
+    let cloneBoard = cloneDeep(gameBoard);
+    console.log(cloneBoard === gameBoard);
+    cloneBoard[row][col] = "X";
+    console.log("click");
+    console.log(cloneBoard);
+    setGameBoard(cloneBoard);
+  };
+
+  const renderTurn = () => {
+    return <div>turn</div>;
+  };
+
+  useEffect(() => {
+    console.log("render");
+    socket.on("startGame", () => {
+      setIsGameRunning(true);
+      console.log("starting");
+    });
+    return () => {
+      socket.off("gameStart");
+    };
+  }, [gameBoard]);
   return (
     <div className={styles.GameBoard()}>
       <div onClick={handleLogoutClick} className={styles.LogoutButton()}>
         Logout
       </div>
 
-      <div className={styles.PlayButton(playerCount)}>
-        {permssionLvl === "client" ? "Waiting for Host" : "Play"}
+      <div onClick={handlePlayClick} className={styles.PlayButton(playerCount)}>
+        {isGameRunning
+          ? renderTurn()
+          : permissionLvl === "client"
+          ? "Waiting for Host"
+          : "Play"}
+        {}
       </div>
       <main className={styles.Main()}>
         {gameBoard.map((row, i) => {
@@ -49,6 +88,11 @@ export default function GameBoard({ playerCount }) {
             if (item === "X") {
               return (
                 <div
+                  onClick={(e) => {
+                    handleBoardClick(e);
+                  }}
+                  data-row={i}
+                  data-col={j}
                   key={`${i}${j}`}
                   className={styles.Tile(applyBorder(i, j))}
                 >
@@ -58,6 +102,11 @@ export default function GameBoard({ playerCount }) {
             } else if (item === "Y") {
               return (
                 <div
+                  onClick={(e) => {
+                    handleBoardClick(e);
+                  }}
+                  data-row={i}
+                  data-col={j}
                   key={`${i}${j}`}
                   className={styles.Tile(applyBorder(i, j))}
                 >
@@ -67,6 +116,11 @@ export default function GameBoard({ playerCount }) {
             } else {
               return (
                 <div
+                  onClick={(e) => {
+                    handleBoardClick(e);
+                  }}
+                  data-row={i}
+                  data-col={j}
                   key={`${i}${j}`}
                   className={styles.Tile(applyBorder(i, j))}
                 ></div>

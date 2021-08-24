@@ -38,7 +38,15 @@ export default {
     );
   },
   Tile: (border) => {
-    return classnames("Tile", border, "border-black");
+    return classnames(
+      "Tile",
+      border,
+      "border-black",
+      "flex",
+      "items-center",
+      "justify-center",
+      "text-8xl"
+    );
   },
   PlayButton: (playersCount) => {
     let border =

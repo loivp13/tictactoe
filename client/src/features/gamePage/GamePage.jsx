@@ -42,8 +42,17 @@ export default function GamePage() {
       content: data,
       roomid,
     });
-    reset();
+    // reset();
   };
+
+  useEffect(() => {
+    socket.on("updateChatRoom", (data) => {
+      setMessages([...messages, data.content.chatMessage]);
+    });
+    return () => {
+      socket.off("updateChatRoom");
+    };
+  }, [messages]);
 
   useEffect(() => {
     //socket listen
@@ -53,21 +62,19 @@ export default function GamePage() {
         history.push("/");
       }
     });
-    socket.on("updateChatRoom", (data) => {
-      setMessages([...messages, data.content.chatMessage]);
-    });
+
     socket.on("userJoin", (data) => {
       let playersCount = localStorage.getItem("playersOnline");
       setPlayerCount(++playerCount);
       setMessages([...messages, data.content]);
     });
+
     return () => {
       socket.disconnect();
       socket.off("connect_error");
-      socket.off("updateChatRoom");
       socket.off("userJoin");
     };
-  }, [messages]);
+  }, []);
 
   return (
     <div className={styles.GamePage()}>
