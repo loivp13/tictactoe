@@ -9,6 +9,9 @@ import { clearLocalStorage } from "../../../helper/clearLocalStorage";
 export default function GameBoard({ playerCount }) {
   let history = useHistory();
   let roomid = localStorage.getItem("roomid");
+  let username = localStorage.getItem("username");
+  let [playersTurn, setPlayersTurn] = useState("");
+  let [gameStatus, setGameStatus] = useState("waiting for bets");
 
   let [gameBoard, setGameBoard] = useState([
     [null, null, null],
@@ -45,14 +48,16 @@ export default function GameBoard({ playerCount }) {
     }
   };
   const handleBoardClick = (e) => {
-    let row = e.currentTarget.getAttribute("data-row");
-    let col = e.currentTarget.getAttribute("data-col");
-    let cloneBoard = cloneDeep(gameBoard);
-    console.log(cloneBoard === gameBoard);
-    cloneBoard[row][col] = "X";
-    console.log("click");
-    console.log(cloneBoard);
-    setGameBoard(cloneBoard);
+    if (playersTurn === username) {
+      let row = e.currentTarget.getAttribute("data-row");
+      let col = e.currentTarget.getAttribute("data-col");
+      let cloneBoard = cloneDeep(gameBoard);
+      console.log(cloneBoard === gameBoard);
+      cloneBoard[row][col] = "X";
+      console.log("click");
+      console.log(cloneBoard);
+      setGameBoard(cloneBoard);
+    }
   };
 
   const renderTurn = () => {

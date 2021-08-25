@@ -6,7 +6,8 @@ export default {
       "w-full",
       "h-screen",
       "overflow-hidden",
-      "p-3"
+      "p-3",
+      "relative"
     );
   },
   Main: () => {
