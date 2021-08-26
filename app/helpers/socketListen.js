@@ -48,6 +48,13 @@ let socketListen = function (io) {
       console.log("game start");
       io.to(roomid).emit("startGame");
     });
+    //player submitted a bet
+    socket.on("playerBet", ({ roomid, betAmount }) => {
+      io.to(roomid).emit("playerReady", {
+        betAmount,
+        username: socket.username,
+      });
+    });
   });
   io.on("disconnect", (socket) => {
     console.log("disconnected");

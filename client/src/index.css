@@ -28,6 +28,13 @@ input::-moz-focus-outer {
 /* width utilities */
 @layer utilities {
   @variants responsive {
+    .w-fit {
+      width: fit-content;
+    }
+
+    .w-7\/10 {
+      width: 70%;
+    }
     .w-8\/10 {
       width: 80%;
     }
@@ -70,6 +77,9 @@ input::-moz-focus-outer {
   @variants responsive {
     .h-1\/10 {
       height: 10%;
+    }
+    .h-7\/10 {
+      height: 70%;
     }
     .h-9\/10 {
       height: 90%;
