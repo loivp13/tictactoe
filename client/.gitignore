@@ -1,6 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-#css
+#css-must manually add
 src/css/app.css
 
 # dependencies

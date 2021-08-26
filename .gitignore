@@ -1,4 +1,7 @@
-node_modules
+#manually add
 app/config
-client/node_modules
 .env
+
+#modules
+node_modules
+client/node_modules
