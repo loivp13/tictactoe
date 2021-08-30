@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const Redis = require("ioredis");
 const app = express();
 const httpServer = require("http").createServer(app);
 const io = require("socket.io")(httpServer, {
@@ -15,6 +16,7 @@ const cors = require("cors");
 let corsOptions = {
   origin: "http://localhost:8081",
 };
+
 app.use(cors(corsOptions));
 
 // parse requests of content-type - application/json
@@ -54,7 +56,8 @@ app.use("/api/users", UserRoutes);
 
 //Sockets init
 let socketListen = require("./app/helpers/socketListen");
-socketListen(io);
+const redis = new Redis();
+socketListen(io, redis);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

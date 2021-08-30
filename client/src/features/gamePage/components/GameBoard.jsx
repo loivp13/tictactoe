@@ -4,6 +4,7 @@ import socket from "../../../helper/socket";
 import { useHistory } from "react-router-dom";
 import checkForWinner from "./helpers/checkForWinner.tsx";
 import { cloneDeep } from "lodash";
+import BettingModal from "../components/BettingModal";
 import { clearLocalStorage } from "../../../helper/clearLocalStorage";
 
 export default function GameBoard({ playerCount }) {
@@ -11,7 +12,7 @@ export default function GameBoard({ playerCount }) {
   let roomid = localStorage.getItem("roomid");
   let username = localStorage.getItem("username");
   let [playersTurn, setPlayersTurn] = useState("");
-  let [gameStatus, setGameStatus] = useState("waiting for bets");
+  let [gameStatus, setGameStatus] = useState("waiting for players");
 
   let [gameBoard, setGameBoard] = useState([
     [null, null, null],
@@ -52,10 +53,7 @@ export default function GameBoard({ playerCount }) {
       let row = e.currentTarget.getAttribute("data-row");
       let col = e.currentTarget.getAttribute("data-col");
       let cloneBoard = cloneDeep(gameBoard);
-      console.log(cloneBoard === gameBoard);
       cloneBoard[row][col] = "X";
-      console.log("click");
-      console.log(cloneBoard);
       setGameBoard(cloneBoard);
     }
   };
@@ -65,10 +63,9 @@ export default function GameBoard({ playerCount }) {
   };
 
   useEffect(() => {
-    console.log("gameBoard render");
     socket.on("startGame", () => {
       setIsGameRunning(true);
-      console.log("starting");
+      setGameStatus("waiting for bets");
     });
     return () => {
       socket.off("gameStart");
@@ -76,6 +73,8 @@ export default function GameBoard({ playerCount }) {
   }, [gameBoard]);
   return (
     <div className={styles.GameBoard()}>
+      {gameStatus === "waiting for bets" ? <BettingModal></BettingModal> : ""}
+
       <div onClick={handleLogoutClick} className={styles.LogoutButton()}>
         Logout
       </div>

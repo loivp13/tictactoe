@@ -1,7 +1,7 @@
 const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, {}, next);
 
-let socketListen = function (io) {
+let socketListen = function (io, redis) {
   io.use((socket, next) => {
     let user = socket.handshake.auth.user;
     if (!user) {
@@ -50,6 +50,17 @@ let socketListen = function (io) {
     });
     //player submitted a bet
     socket.on("playerBet", ({ roomid, betAmount }) => {
+      redis.get(roomid, (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          if (result) {
+            console.log(result);
+          } else {
+            redis.set(roomid, 1);
+          }
+        }
+      });
       io.to(roomid).emit("playerReady", {
         betAmount,
         username: socket.username,
