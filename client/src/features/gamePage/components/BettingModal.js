@@ -24,8 +24,8 @@ const BettingModal = () => {
     e.preventDefault(0);
     betInputSchema
       .validate({ betAmount })
-      .then((value) => {
-        socket.emit("playerBet", { roomid, value });
+      .then(({ betAmount }) => {
+        socket.emit("playerBet", { roomid, betAmount });
       })
       .catch(function (err) {
         setInputErrorMessage(err.message);

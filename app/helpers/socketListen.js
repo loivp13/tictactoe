@@ -51,6 +51,7 @@ let socketListen = function (io, redis) {
     //player submitted a bet
     socket.on("playerBet", ({ roomid, betAmount }) => {
       //look if players have started to bet
+      console.log(roomid, betAmount);
       redis.get(roomid, (err, result) => {
         //if error
         if (err) {
@@ -59,7 +60,6 @@ let socketListen = function (io, redis) {
           //determine who goes first
         } else {
           if (result) {
-            console.log(result);
             let { firstPlayer, firstPlayerAmount } = JSON.parse(result);
             if (firstPlayerAmount > betAmount) {
               io.to(roomid).emit("betEnded", {
@@ -72,12 +72,12 @@ let socketListen = function (io, redis) {
                 username: socket.username,
               });
             }
+            redis.del(roomid);
           } else {
             let stringify = JSON.stringify({
               firstPlayer: socket.username,
               firstPlayerAmount: betAmount,
             });
-            console.log(stringify);
             redis.set(roomid, stringify);
           }
         }
