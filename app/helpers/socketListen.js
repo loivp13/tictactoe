@@ -50,20 +50,37 @@ let socketListen = function (io, redis) {
     });
     //player submitted a bet
     socket.on("playerBet", ({ roomid, betAmount }) => {
+      //look if players have started to bet
       redis.get(roomid, (err, result) => {
+        //if error
         if (err) {
           console.log(err);
+
+          //determine who goes first
         } else {
           if (result) {
             console.log(result);
+            let { firstPlayer, firstPlayerAmount } = JSON.parse(result);
+            if (firstPlayerAmount > betAmount) {
+              io.to(roomid).emit("betEnded", {
+                betAmount: firstPlayerAmount,
+                username: firstPlayer,
+              });
+            } else {
+              io.to(roomid).emit("betEnded", {
+                betAmount,
+                username: socket.username,
+              });
+            }
           } else {
-            redis.set(roomid, 1);
+            let stringify = JSON.stringify({
+              firstPlayer: socket.username,
+              firstPlayerAmount: betAmount,
+            });
+            console.log(stringify);
+            redis.set(roomid, stringify);
           }
         }
-      });
-      io.to(roomid).emit("playerReady", {
-        betAmount,
-        username: socket.username,
       });
     });
   });

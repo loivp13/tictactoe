@@ -67,6 +67,10 @@ export default function GameBoard({ playerCount }) {
       setIsGameRunning(true);
       setGameStatus("waiting for bets");
     });
+
+    socket.on("betEnded", ({ betAmount, username }) => {
+      console.log(betAmount, username);
+    });
     return () => {
       socket.off("gameStart");
     };

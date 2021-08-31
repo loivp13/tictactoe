@@ -56,7 +56,7 @@ app.use("/api/users", UserRoutes);
 
 //Sockets init
 let socketListen = require("./app/helpers/socketListen");
-const redis = new Redis();
+const redis = new Redis(6379);
 socketListen(io, redis);
 
 // set port, listen for requests
