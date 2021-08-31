@@ -56,7 +56,11 @@ app.use("/api/users", UserRoutes);
 
 //Sockets init
 let socketListen = require("./app/helpers/socketListen");
-const redis = new Redis(6379, "wsl");
+const redis = new Redis({
+  port: 6379, // Redis port
+  host: "wsl", // Redis host
+  password: process.env.REDIS_PW,
+});
 socketListen(io, redis);
 
 // set port, listen for requests
