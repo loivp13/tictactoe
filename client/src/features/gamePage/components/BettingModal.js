@@ -17,14 +17,17 @@ const BettingModal = () => {
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [timer, setTimer] = useState(20);
   const countDownRef = useRef(null);
-  let currentMoney = 1000;
+  const timerIdRef = useRef(null);
   const roomid = localStorage.getItem("roomid");
+  let currentMoney = 1000;
 
   const handleSubmitBet = (e) => {
     e.preventDefault(0);
     betInputSchema
       .validate({ betAmount })
       .then(({ betAmount }) => {
+        clearInterval(timerIdRef.current);
+
         socket.emit("playerBet", { roomid, betAmount });
       })
       .catch(function (err) {
@@ -42,10 +45,13 @@ const BettingModal = () => {
 
   const updateTimer = (num, id) => {
     countDownRef.current = num;
+    timerIdRef.current = id;
+
     setTimer(countDownRef.current);
   };
   const stopTimer = () => {
-    console.log("stop");
+    clearInterval(timerIdRef.current);
+    socket.emit("playerBet", { roomid, betAmount: 0 });
   };
 
   useEffect(() => {

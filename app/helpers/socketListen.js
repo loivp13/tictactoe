@@ -66,11 +66,13 @@ let socketListen = function (io, redis) {
                 betAmount: firstPlayerAmount,
                 username: firstPlayer,
               });
-            } else {
+            } else if (firstPlayerAmount < betAmount) {
               io.to(roomid).emit("betEnded", {
                 betAmount,
                 username: socket.username,
               });
+            } else {
+              //HANDLE TIE
             }
             redis.del(roomid);
           } else {
