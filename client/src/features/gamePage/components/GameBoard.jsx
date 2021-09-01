@@ -3,7 +3,7 @@ import styles from "./GameBoard.styles";
 import socket from "../../../helper/socket";
 import { useHistory } from "react-router-dom";
 import checkForWinner from "./helpers/checkForWinner.tsx";
-import { cloneDeep } from "lodash";
+import { clone, cloneDeep, update } from "lodash";
 import BettingModal from "../components/BettingModal";
 import { clearLocalStorage } from "../../../helper/clearLocalStorage";
 
@@ -13,6 +13,7 @@ export default function GameBoard({ playerCount }) {
   let username = localStorage.getItem("username");
   let [playersTurn, setPlayersTurn] = useState("");
   let [gameStatus, setGameStatus] = useState("waiting for players");
+  let [messages, setMessages] = useState("");
 
   let [gameBoard, setGameBoard] = useState([
     [null, null, null],
@@ -40,6 +41,7 @@ export default function GameBoard({ playerCount }) {
     socket.connected ? socket.disconnect() : clearLocalStorage();
     history.push("/");
   };
+
   const handlePlayClick = () => {
     if (permissionLvl === "host") {
       setIsGameRunning(true);
@@ -48,18 +50,48 @@ export default function GameBoard({ playerCount }) {
       });
     }
   };
+
+  const updateBoard = (row, col) => {
+    let cloneBoard = cloneDeep(gameBoard);
+
+    //check if valid pick
+    if (!cloneBoard[row][col]) {
+      //if valid update socket
+      cloneBoard[row][col] = permissionLvl === "host" ? "X" : "O";
+      return cloneBoard;
+    } else {
+      // make user pick again
+      setMessages("Not a valid play");
+    }
+    return false;
+  };
+
   const handleBoardClick = (e) => {
     if (playersTurn === username) {
       let row = e.currentTarget.getAttribute("data-row");
       let col = e.currentTarget.getAttribute("data-col");
-      let cloneBoard = cloneDeep(gameBoard);
-      cloneBoard[row][col] = "X";
-      setGameBoard(cloneBoard);
+
+      let cloneBoard = updateBoard(row, col);
+      if (cloneBoard) {
+        setPlayersTurn("");
+        //check if winning play
+        if (checkForWinner(cloneBoard)) {
+          //true
+          socket.emit("gameEnded");
+        } else {
+          //false
+          socket.emit("playersTurnEnded", { roomid, cloneBoard });
+        }
+      }
+    } else {
+      setMessages("Opponent's turn");
     }
   };
 
   const renderTurn = () => {
-    return <div>turn</div>;
+    return (
+      <div>{playersTurn === username ? "Your Turn" : "Opponent's turn"}</div>
+    );
   };
 
   useEffect(() => {
@@ -72,14 +104,27 @@ export default function GameBoard({ playerCount }) {
       setGameStatus(`waiting for players's move`);
       setPlayersTurn(username);
     });
+
+    socket.on("nextPlayersTurn", ({ username: userPlayed, cloneBoard }) => {
+      setGameBoard(cloneBoard);
+      console.log(userPlayed);
+      setPlayersTurn(userPlayed === username ? "" : username);
+    });
     return () => {
       socket.off("gameStart");
+      socket.off("betEnded");
+      socket.off("nextPlayersTurn");
     };
   }, [gameBoard]);
+
   return (
     <div className={styles.GameBoard()}>
-      {gameStatus === "waiting for bets" ? <BettingModal></BettingModal> : ""}
-
+      {gameStatus === "waiting for bets" ? (
+        <BettingModal setGameStatus={setGameStatus}></BettingModal>
+      ) : (
+        ""
+      )}
+      <div className={styles.Messages()}>{messages ? messages : "mes"}</div>
       <div onClick={handleLogoutClick} className={styles.LogoutButton()}>
         Logout
       </div>
@@ -109,7 +154,7 @@ export default function GameBoard({ playerCount }) {
                   X
                 </div>
               );
-            } else if (item === "Y") {
+            } else if (item === "O") {
               return (
                 <div
                   onClick={(e) => {
@@ -120,7 +165,7 @@ export default function GameBoard({ playerCount }) {
                   key={`${i}${j}`}
                   className={styles.Tile(applyBorder(i, j))}
                 >
-                  Y
+                  O
                 </div>
               );
             } else {

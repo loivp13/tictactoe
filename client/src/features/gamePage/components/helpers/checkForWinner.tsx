@@ -55,12 +55,15 @@ export default function checkForWinner(array: any) {
     let idx1 = winCondition[i][0];
     let idx2 = winCondition[i][1];
     let idx3 = winCondition[i][2];
+
     let val1 = mergeArray[idx1];
     let val2 = mergeArray[idx2];
     let val3 = mergeArray[idx3];
+    // if one null in value there is no winner for current loop
     if (val1 === null || val2 == null || val3 === null) {
       continue;
     }
+    //if all matches there is a match
     if (val1 === val2 && val2 === val3) {
       return val1;
     }

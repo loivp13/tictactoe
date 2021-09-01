@@ -85,7 +85,15 @@ let socketListen = function (io, redis) {
         }
       });
     });
+    socket.on("playersTurnEnded", ({ roomid, cloneBoard }) => {
+      console.log(cloneBoard);
+      io.to(roomid).emit("nextPlayersTurn", {
+        username: socket.username,
+        cloneBoard,
+      });
+    });
   });
+
   io.on("disconnect", (socket) => {
     console.log("disconnected");
   });

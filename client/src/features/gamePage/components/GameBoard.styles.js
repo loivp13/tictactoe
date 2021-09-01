@@ -10,6 +10,15 @@ export default {
       "relative"
     );
   },
+  Messages: () => {
+    return classnames(
+      "text-white",
+      "flex",
+      "align-center",
+      "w-full",
+      "justify-center"
+    );
+  },
   Main: () => {
     return classnames(
       "Main",
@@ -60,5 +69,16 @@ export default {
       "rounded-xl",
       "border"
     );
+  },
+  ApplyBorder: (i, j) => {
+    if (i > 1 && j !== 2) {
+      return "border-r";
+    } else if (j <= 1) {
+      return "border-r border-b";
+    } else if (j === 2 && i === 2) {
+      return "";
+    } else {
+      return "border-b";
+    }
   },
 };
