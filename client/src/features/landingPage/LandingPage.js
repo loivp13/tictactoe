@@ -42,6 +42,7 @@ export default function LandingPage({}) {
   // passed to the submit handler if no errors form forms;
   const submitCreateRoom = (data, e) => {
     console.log(data);
+    //TODO remove dev
     socket.auth = { user: data.createRoom_username };
     socket.connect();
   };
@@ -105,6 +106,7 @@ export default function LandingPage({}) {
               className={styles.Input()}
               type="text"
               placeholder="Please enter a username"
+              value="owner"
               {...register_createRoom("createRoom_username")}
             />
             <button className={styles.Button()} type="submit">
@@ -132,6 +134,7 @@ export default function LandingPage({}) {
               className={styles.Input()}
               type="text"
               placeholder="Please enter a username"
+              value="guest"
               {...register_joinRoom("joinRoom_username")}
             />
             <label htmlFor="joinRoom_roomid">Room ID</label>

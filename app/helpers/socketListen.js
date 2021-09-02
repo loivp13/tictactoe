@@ -85,12 +85,23 @@ let socketListen = function (io, redis) {
         }
       });
     });
-    socket.on("playersTurnEnded", ({ roomid, cloneBoard }) => {
-      console.log(cloneBoard);
-      io.to(roomid).emit("nextPlayersTurn", {
-        username: socket.username,
+    socket.on("gameEnded", ({ roomid, cloneBoard, winner }) => {
+      io.to(roomid).emit("gameOver", {
         cloneBoard,
+        username,
       });
+    });
+    socket.on("updateBoard", ({ roomid, cloneBoard, rounds }) => {
+      console.log(rounds);
+      if (rounds < 2) {
+        io.to(roomid).emit("nextPlayersTurn", {
+          username: socket.username,
+          cloneBoard,
+          rounds,
+        });
+      } else {
+        io.to(roomid).emit("roundEnded", { cloneBoard, rounds });
+      }
     });
   });
 

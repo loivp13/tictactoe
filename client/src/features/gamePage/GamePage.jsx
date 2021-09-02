@@ -7,6 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useHistory } from "react-router-dom";
 import checkIfLogin from "../../helper/checkIfLogin";
 import GameBoard from "./components/GameBoard";
+import ScoreBoard from "./components/ScoreBoard";
 
 //schema for chat form
 const chatMessageSchema = yup.object().shape({
@@ -81,7 +82,7 @@ export default function GamePage() {
     <div className={styles.GamePage()}>
       <main className={styles.Main()}>
         <header className={styles.Header()}>Tic Tac Toe</header>
-        <div className={styles.ScoreBoard()}>score board</div>
+        <ScoreBoard></ScoreBoard>
         <div className={styles.Row()}>
           <div className={styles.ChatBox()}>
             <div className={styles.RoomId()}>

@@ -12,14 +12,14 @@ let betInputSchema = yup.object().shape({
     .min(0, "You cannot use a negative number"),
 });
 
-const BettingModal = ({ setGameStatus }) => {
+const BettingModal = ({ setGameStatus, cash }) => {
   const [betAmount, setBetAmount] = useState(0);
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const [timer, setTimer] = useState(20);
   const countDownRef = useRef(null);
   const timerIdRef = useRef(null);
   const roomid = localStorage.getItem("roomid");
-  let currentMoney = 1000;
+  let currentMoney = cash;
 
   const handleSubmitBet = (e) => {
     e.preventDefault(0);
@@ -53,6 +53,7 @@ const BettingModal = ({ setGameStatus }) => {
   const stopTimer = () => {
     clearInterval(timerIdRef.current);
     socket.emit("playerBet", { roomid, betAmount: 0 });
+    setGameStatus("waiting for players");
   };
 
   useEffect(() => {

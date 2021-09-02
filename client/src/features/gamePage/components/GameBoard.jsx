@@ -3,7 +3,7 @@ import styles from "./GameBoard.styles";
 import socket from "../../../helper/socket";
 import { useHistory } from "react-router-dom";
 import checkForWinner from "./helpers/checkForWinner.tsx";
-import { clone, cloneDeep, update } from "lodash";
+import { cloneDeep } from "lodash";
 import BettingModal from "../components/BettingModal";
 import { clearLocalStorage } from "../../../helper/clearLocalStorage";
 
@@ -14,6 +14,12 @@ export default function GameBoard({ playerCount }) {
   let [playersTurn, setPlayersTurn] = useState("");
   let [gameStatus, setGameStatus] = useState("waiting for players");
   let [messages, setMessages] = useState("");
+  const [cash, setCash] = useState(1000);
+  //round indicated how many players has played after a  single bet
+  // 0 == no players has played
+  // 1 == 1 player played;
+  // 2 == 2 players played -> start betting again -> reset to 0
+  let [rounds, setRounds] = useState(0);
 
   let [gameBoard, setGameBoard] = useState([
     [null, null, null],
@@ -77,10 +83,18 @@ export default function GameBoard({ playerCount }) {
         //check if winning play
         if (checkForWinner(cloneBoard)) {
           //true
-          socket.emit("gameEnded");
+          socket.emit("gameEnded", {
+            roomid,
+            cloneBoard,
+            username,
+          });
         } else {
           //false
-          socket.emit("playersTurnEnded", { roomid, cloneBoard });
+          socket.emit("updateBoard", {
+            roomid,
+            cloneBoard,
+            rounds: rounds + 1,
+          });
         }
       }
     } else {
@@ -100,27 +114,54 @@ export default function GameBoard({ playerCount }) {
       setGameStatus("waiting for bets");
     });
 
-    socket.on("betEnded", ({ betAmount, username }) => {
+    socket.on("betEnded", ({ betAmount, username: highestBidder }) => {
       setGameStatus(`waiting for players's move`);
+      if (highestBidder === username) {
+        setCash(cash - betAmount);
+      }
       setPlayersTurn(username);
     });
 
-    socket.on("nextPlayersTurn", ({ username: userPlayed, cloneBoard }) => {
+    socket.on(
+      "nextPlayersTurn",
+      ({ username: userPlayed, cloneBoard, rounds }) => {
+        setGameBoard(cloneBoard);
+        setPlayersTurn(userPlayed === username ? "" : username);
+        setRounds(rounds);
+      }
+    );
+
+    socket.on("playersPlaceBet", ({ cloneBoard }) => {
+      setRounds(false);
       setGameBoard(cloneBoard);
-      console.log(userPlayed);
-      setPlayersTurn(userPlayed === username ? "" : username);
+      setPlayersTurn("");
+      setGameStatus("waiting for bets");
+    });
+    socket.on("roundEnded", ({ cloneBoard }) => {
+      setGameBoard(cloneBoard);
+      setRounds(0);
+      setTimeout(() => {
+        setGameStatus("waiting for bets");
+      }, 1000);
+    });
+    socket.on("gameOver", ({ cloneBoard, username }) => {
+      setGameBoard(cloneBoard);
+      setRounds(0);
+      setGameStatus("gameOver");
     });
     return () => {
       socket.off("gameStart");
       socket.off("betEnded");
       socket.off("nextPlayersTurn");
+      socket.off("playersPlaceBet");
+      socket.off("gameOver");
     };
   }, [gameBoard]);
 
   return (
     <div className={styles.GameBoard()}>
       {gameStatus === "waiting for bets" ? (
-        <BettingModal setGameStatus={setGameStatus}></BettingModal>
+        <BettingModal cash={cash} setGameStatus={setGameStatus}></BettingModal>
       ) : (
         ""
       )}
