@@ -22,7 +22,7 @@ export default function GameBoard({ playerCount }) {
   let [rounds, setRounds] = useState(0);
 
   let [gameBoard, setGameBoard] = useState([
-    [null, null, null],
+    ["X", "X", null],
     [null, null, null],
     [null, null, null],
   ]);
@@ -49,7 +49,7 @@ export default function GameBoard({ playerCount }) {
   };
 
   const handlePlayClick = () => {
-    if (permissionLvl === "host") {
+    if (permissionLvl === "host" && playerCount > 1) {
       setIsGameRunning(true);
       socket.emit("gameStart", {
         roomid,
@@ -86,7 +86,7 @@ export default function GameBoard({ playerCount }) {
           socket.emit("gameEnded", {
             roomid,
             cloneBoard,
-            username,
+            winner: username,
           });
         } else {
           //false
@@ -119,7 +119,7 @@ export default function GameBoard({ playerCount }) {
       if (highestBidder === username) {
         setCash(cash - betAmount);
       }
-      setPlayersTurn(username);
+      setPlayersTurn(highestBidder);
     });
 
     socket.on(

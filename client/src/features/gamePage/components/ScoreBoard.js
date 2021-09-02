@@ -1,34 +1,60 @@
 import React, { useEffect, useState } from "react";
 import styles from "./ScoreBoard.styles";
-import { cloneDeep } from "lodash";
+import { clone, cloneDeep } from "lodash";
 import socket from "../../../helper/socket";
 
 const ScoreBoard = () => {
-  let user = localStorage.getItem("username");
-  let oppponent = localStorage.getItem("opponent") || "Waiting...";
+  let [user, setUser] = useState(localStorage.getItem("username"));
+  let [oppponent, setOpponent] = useState(
+    localStorage.getItem("opponent") || "Invite someone!"
+  );
 
-  let score = useState({
+  let [scoreboard, setScoreboard] = useState({
     [user]: 0,
     [oppponent]: 0,
   });
   useEffect(() => {
+    socket.on("userJoin", ({ username }) => {
+      if (username !== user) {
+        setOpponent(username);
+        setScoreboard({
+          ...scoreboard,
+          [username]: 0,
+        });
+      }
+    });
+    socket.on("updatingGuest", ({ hostname }) => {
+      if (hostname !== user) {
+        setOpponent(hostname);
+        setScoreboard({
+          ...scoreboard,
+          [hostname]: 0,
+        });
+      }
+    });
     socket.on("gameOver", ({ username }) => {
-      let cloneScore = cloneDeep(score);
+      let cloneScore = cloneDeep(scoreboard);
+      console.log(cloneScore);
       for (let player in cloneScore) {
         if (player === username) {
           cloneScore[player] += 1;
+          console.log(cloneScore, player);
+          setScoreboard(cloneScore);
         }
       }
     });
     return () => {
+      socket.off("userJoin");
       socket.off("gameOver");
     };
   }, []);
   return (
     <div className={styles.ScoreBoard()}>
       <div className={styles.Container()}>
-        <div className={styles.Box()}>{`You : ${score[user]} `}</div>
-        <div className={styles.Box()}>{`Opponent : ${score[oppponent]} `}</div>
+        <div className={styles.Box()}>{`${user} : ${scoreboard[user]} `}</div>
+        <div
+          className={styles.Box()}
+        >{`${oppponent} : ${scoreboard[oppponent]} `}</div>
       </div>
     </div>
   );

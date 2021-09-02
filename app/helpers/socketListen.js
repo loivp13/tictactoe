@@ -24,6 +24,7 @@ let socketListen = function (io, redis) {
       });
       io.to(roomid).emit("userJoin", {
         content: `${socket.username} has joined!`,
+        username: socket.username,
       });
       //create room is has no id
     } else {
@@ -43,6 +44,12 @@ let socketListen = function (io, redis) {
       });
     });
 
+    //update guest with host's username
+    socket.on("updateGuest", ({ hostname, roomid }) => {
+      io.to(roomid).emit("updatingGuest", {
+        hostname,
+      });
+    });
     //player started the game
     socket.on("gameStart", ({ roomid }) => {
       console.log("game start");
@@ -85,10 +92,11 @@ let socketListen = function (io, redis) {
         }
       });
     });
+
     socket.on("gameEnded", ({ roomid, cloneBoard, winner }) => {
       io.to(roomid).emit("gameOver", {
         cloneBoard,
-        username,
+        username: winner,
       });
     });
     socket.on("updateBoard", ({ roomid, cloneBoard, rounds }) => {

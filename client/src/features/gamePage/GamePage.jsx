@@ -65,10 +65,12 @@ export default function GamePage() {
       }
     });
 
-    socket.on("userJoin", (data) => {
+    socket.on("userJoin", ({ content, username: guestName }) => {
       let playersCount = localStorage.getItem("playersOnline");
       setPlayerCount(++playerCount);
-      setMessages([...messages, data.content]);
+      setMessages([...messages, content]);
+      if (guestName !== username)
+        socket.emit("updateGuest", { hostname: username, roomid });
     });
 
     return () => {
