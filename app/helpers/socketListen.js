@@ -98,6 +98,9 @@ let socketListen = function (io, redis) {
         cloneBoard,
         username: winner,
       });
+      io.to(roomid).emit("updateGameBoard", {
+        username: winner,
+      });
     });
     socket.on("updateBoard", ({ roomid, cloneBoard, rounds }) => {
       console.log(rounds);

@@ -65,6 +65,7 @@ export default function LandingPage({}) {
       localStorage.setItem("playersOnline", 1);
       history.push("/gamePage");
     });
+
     socket.on("joinRoom", (data) => {
       localStorage.setItem("roomid", data.roomid);
       localStorage.setItem("username", data.username);
@@ -72,6 +73,7 @@ export default function LandingPage({}) {
 
       history.push("/GamePage");
     });
+
     socket.on("connect_error", (err) => {
       if (err.message === "invalid username") {
         console.log("wrong username");

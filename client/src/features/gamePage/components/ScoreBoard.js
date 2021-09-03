@@ -15,6 +15,7 @@ const ScoreBoard = () => {
   });
   useEffect(() => {
     socket.on("userJoin", ({ username }) => {
+      console.log("userjoin", scoreboard);
       if (username !== user) {
         setOpponent(username);
         setScoreboard({
@@ -24,6 +25,7 @@ const ScoreBoard = () => {
       }
     });
     socket.on("updatingGuest", ({ hostname }) => {
+      console.log("updatingguest", scoreboard);
       if (hostname !== user) {
         setOpponent(hostname);
         setScoreboard({
@@ -32,22 +34,21 @@ const ScoreBoard = () => {
         });
       }
     });
-    socket.on("gameOver", ({ username }) => {
+    socket.on("updateGameBoard", ({ username }) => {
       let cloneScore = cloneDeep(scoreboard);
-      console.log(cloneScore);
       for (let player in cloneScore) {
         if (player === username) {
           cloneScore[player] += 1;
-          console.log(cloneScore, player);
           setScoreboard(cloneScore);
         }
       }
     });
     return () => {
+      socket.off("updatingGuest");
       socket.off("userJoin");
-      socket.off("gameOver");
+      socket.off("updateGameBoard");
     };
-  }, []);
+  }, [scoreboard]);
   return (
     <div className={styles.ScoreBoard()}>
       <div className={styles.Container()}>

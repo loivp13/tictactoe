@@ -4,7 +4,8 @@ import socket from "../../../helper/socket";
 import { useHistory } from "react-router-dom";
 import checkForWinner from "./helpers/checkForWinner.tsx";
 import { cloneDeep } from "lodash";
-import BettingModal from "../components/BettingModal";
+import BettingModal from "./BettingModal";
+import RestartGameModal from "./RestartGameModal";
 import { clearLocalStorage } from "../../../helper/clearLocalStorage";
 
 export default function GameBoard({ playerCount }) {
@@ -23,7 +24,7 @@ export default function GameBoard({ playerCount }) {
 
   let [gameBoard, setGameBoard] = useState([
     ["X", "X", null],
-    [null, null, null],
+    ["O", "O", null],
     [null, null, null],
   ]);
   let [isGameRunning, setIsGameRunning] = useState(false);
@@ -145,16 +146,18 @@ export default function GameBoard({ playerCount }) {
       }, 1000);
     });
     socket.on("gameOver", ({ cloneBoard, username }) => {
+      console.log("final piece");
       setGameBoard(cloneBoard);
       setRounds(0);
       setGameStatus("gameOver");
     });
     return () => {
-      socket.off("gameStart");
+      socket.off("startGame");
       socket.off("betEnded");
       socket.off("nextPlayersTurn");
       socket.off("playersPlaceBet");
       socket.off("gameOver");
+      socket.off("roundEnded");
     };
   }, [gameBoard]);
 
@@ -165,6 +168,7 @@ export default function GameBoard({ playerCount }) {
       ) : (
         ""
       )}
+      {gameStatus === "gameOver" ? <RestartGameModal /> : ""}
       <div className={styles.Messages()}>{messages ? messages : "mes"}</div>
       <div onClick={handleLogoutClick} className={styles.LogoutButton()}>
         Logout
