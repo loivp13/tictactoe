@@ -58,6 +58,12 @@ export default function GameBoard({ playerCount }) {
     }
   };
 
+  const handleRestartGameClick = () => {
+    if (permissionLvl === "host" && playerCount > 1) {
+      socket.emit("restartGame", { roomid });
+    }
+  };
+
   const updateBoard = (row, col) => {
     let cloneBoard = cloneDeep(gameBoard);
 
@@ -76,6 +82,7 @@ export default function GameBoard({ playerCount }) {
   const handleBoardClick = (e) => {
     if (playersTurn === username) {
       let row = e.currentTarget.getAttribute("data-row");
+
       let col = e.currentTarget.getAttribute("data-col");
 
       let cloneBoard = updateBoard(row, col);
@@ -138,6 +145,7 @@ export default function GameBoard({ playerCount }) {
       setPlayersTurn("");
       setGameStatus("waiting for bets");
     });
+
     socket.on("roundEnded", ({ cloneBoard }) => {
       setGameBoard(cloneBoard);
       setRounds(0);
@@ -145,12 +153,23 @@ export default function GameBoard({ playerCount }) {
         setGameStatus("waiting for bets");
       }, 1000);
     });
+
     socket.on("gameOver", ({ cloneBoard, username }) => {
-      console.log("final piece");
       setGameBoard(cloneBoard);
       setRounds(0);
       setGameStatus("gameOver");
     });
+
+    socket.on("restartingGame", () => {
+      setGameBoard([
+        [null, null, null],
+        [null, null, null],
+        [null, null, null],
+      ]);
+      setCash(1000);
+      socket.emit("gameStart", { roomid });
+    });
+
     return () => {
       socket.off("startGame");
       socket.off("betEnded");
@@ -158,6 +177,7 @@ export default function GameBoard({ playerCount }) {
       socket.off("playersPlaceBet");
       socket.off("gameOver");
       socket.off("roundEnded");
+      socket.off("restartingGame");
     };
   }, [gameBoard]);
 
@@ -168,7 +188,15 @@ export default function GameBoard({ playerCount }) {
       ) : (
         ""
       )}
-      {gameStatus === "gameOver" ? <RestartGameModal /> : ""}
+      {gameStatus === "gameOver" ? (
+        <RestartGameModal
+          restartGame={handleRestartGameClick}
+          permissionLvl={permissionLvl}
+          logOut={handleLogoutClick}
+        />
+      ) : (
+        ""
+      )}
       <div className={styles.Messages()}>{messages ? messages : "mes"}</div>
       <div onClick={handleLogoutClick} className={styles.LogoutButton()}>
         Logout

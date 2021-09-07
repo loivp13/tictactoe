@@ -190,3 +190,15 @@ input::-moz-focus-outer {
 }
 
 /* animation  */
+
+/* margin */
+@layer utilities {
+  @variants responsive {
+    .mt-1\/2 {
+      margin-top: 50%;
+    }
+    .mt-1\/4 {
+      margin-top: 25%;
+    }
+  }
+}

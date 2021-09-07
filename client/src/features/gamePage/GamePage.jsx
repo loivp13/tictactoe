@@ -8,6 +8,7 @@ import { useHistory } from "react-router-dom";
 import checkIfLogin from "../../helper/checkIfLogin";
 import GameBoard from "./components/GameBoard";
 import ScoreBoard from "./components/ScoreBoard";
+import { rest } from "lodash";
 
 //schema for chat form
 const chatMessageSchema = yup.object().shape({
@@ -38,6 +39,7 @@ export default function GamePage() {
   //handles when submitting a chat message
   const handleChatSubmit = (data) => {
     console.log(data);
+    reset();
     socket.emit("submitChatMessage", {
       content: data,
       roomid,

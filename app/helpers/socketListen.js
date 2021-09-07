@@ -114,6 +114,9 @@ let socketListen = function (io, redis) {
         io.to(roomid).emit("roundEnded", { cloneBoard, rounds });
       }
     });
+    socket.on("restartGame", ({ roomid }) => {
+      io.to(roomid).emit("restartingGame");
+    });
   });
 
   io.on("disconnect", (socket) => {
