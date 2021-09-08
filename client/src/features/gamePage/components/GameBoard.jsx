@@ -23,8 +23,8 @@ export default function GameBoard({ playerCount }) {
   let [rounds, setRounds] = useState(0);
 
   let [gameBoard, setGameBoard] = useState([
-    ["X", "X", null],
-    ["O", "O", null],
+    [null, null, null],
+    [null, null, null],
     [null, null, null],
   ]);
   let [isGameRunning, setIsGameRunning] = useState(false);
@@ -45,6 +45,11 @@ export default function GameBoard({ playerCount }) {
   };
 
   const handleLogoutClick = () => {
+    socket.emit("userLoggedOut", {
+      permissionLvl,
+      roomid,
+      username,
+    });
     socket.connected ? socket.disconnect() : clearLocalStorage();
     history.push("/");
   };
@@ -139,6 +144,11 @@ export default function GameBoard({ playerCount }) {
       }
     );
 
+    socket.on("loggingGuestOut", ({ content }) => {
+      clearLocalStorage();
+      localStorage.setItem("hostEndedSession", content);
+      history.push("/");
+    });
     socket.on("playersPlaceBet", ({ cloneBoard }) => {
       setRounds(false);
       setGameBoard(cloneBoard);

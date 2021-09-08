@@ -8,7 +8,7 @@ import { useHistory } from "react-router-dom";
 import checkIfLogin from "../../helper/checkIfLogin";
 import GameBoard from "./components/GameBoard";
 import ScoreBoard from "./components/ScoreBoard";
-import { rest } from "lodash";
+import { clearLocalStorage } from "../../helper/clearLocalStorage";
 
 //schema for chat form
 const chatMessageSchema = yup.object().shape({
@@ -65,6 +65,11 @@ export default function GamePage() {
         console.log("err.message");
         history.push("/");
       }
+    });
+
+    socket.on("endingSession", () => {
+      clearLocalStorage();
+      history.push("/");
     });
 
     socket.on("userJoin", ({ content, username: guestName }) => {

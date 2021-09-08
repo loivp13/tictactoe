@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import socket from "../../helper/socket";
 import styles from "./LandingPage.styles";
 import { useForm } from "react-hook-form";
@@ -24,6 +24,9 @@ export default function LandingPage({}) {
   if (roomid) {
     history.push("/gamePage");
   }
+  let [hostEndedMessage, setHostEndedMessage] = useState(
+    localStorage.getItem("hostEndedSession")
+  );
 
   //create submit handler, errors handling for forms;
   //register to inputs using register:<rename> function
@@ -58,6 +61,8 @@ export default function LandingPage({}) {
 
   useEffect(() => {
     //socket listening
+    localStorage.setItem("hostEndedSession", "");
+
     socket.on("createRoom", (data) => {
       localStorage.setItem("roomid", data.roomid);
       localStorage.setItem("username", data.username);
@@ -84,7 +89,7 @@ export default function LandingPage({}) {
       socket.off("joinRoom");
       socket.off("connect_error");
     };
-  }, []);
+  }, [hostEndedMessage]);
   return (
     <div className={styles.LandingPage()}>
       <header className={styles.Header()}> Tic Tac Toe</header>
@@ -95,6 +100,7 @@ export default function LandingPage({}) {
             {createRoomErrors.createRoom_username &&
               createRoomErrors.createRoom_username.message}
           </div>
+          <div className={styles.ErrorMessages()}>{hostEndedMessage}</div>
           <form
             className={styles.Form()}
             onSubmit={handle_createRoom(submitCreateRoom)}

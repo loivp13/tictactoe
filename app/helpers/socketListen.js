@@ -117,6 +117,18 @@ let socketListen = function (io, redis) {
     socket.on("restartGame", ({ roomid }) => {
       io.to(roomid).emit("restartingGame");
     });
+
+    socket.on("userLoggedOut", ({ permissionLvl, roomid, username }) => {
+      if (permissionLvl === "host") {
+        io.to(roomid).emit("loggingGuestOut", {
+          content: "Host has ended the session",
+        });
+      } else if (permissionLvl === "guest") {
+        io.to(roomid).emit("updatingHost", {
+          content: `${username} has logged out`,
+        });
+      }
+    });
   });
 
   io.on("disconnect", (socket) => {
